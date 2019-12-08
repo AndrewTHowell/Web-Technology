@@ -19,6 +19,10 @@ PATH = dirname(abspath(__file__)) + "//"
 booksPath = PATH + "books.json"
 books = pd.read_json(path_or_buf=booksPath, orient='records')
 
+usersPath = PATH + "users.json"
+users = pd.read_json(path_or_buf=usersPath, orient='records')
+
 # Section End
 
 print(books)
+print(users)
