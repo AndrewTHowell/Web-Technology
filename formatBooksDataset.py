@@ -8,6 +8,7 @@ from os.path import dirname, abspath
 
 # Section End
 
+
 bookIDCounter = 0
 bookIDs = []
 bookTitles = []
@@ -33,6 +34,17 @@ with open(dataset, "r", encoding="utf-8") as file:
 
 books = pd.DataFrame(data={"bookID": bookIDs, "bookTitle": bookTitles,
                            "bookGenres": genres})
+
+
+userIDs = []
+bookIDs = []
+bookRatings = []
+
+ratings = pd.DataFrame(data={"userID": userIDs, "bookID": bookIDs,
+                             "bookRating": bookRatings})
+
+currentPath = dirname(abspath(__file__)) + "//ratings.json"
+ratings.to_json(path_or_buf=currentPath, orient='records')
 
 print(books)
 
