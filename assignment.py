@@ -1,10 +1,10 @@
 # Section: Import modules
 
-import json
-
 import pandas as pd
 
 from os.path import dirname, abspath
+
+import numpy as np
 
 # Section End
 
@@ -29,10 +29,18 @@ ratings = pd.read_csv(CURRENTPATH+"//ratings.csv")
 
 def getRecommendation(books, ratings):
     pivotBooksRatings = ratings.pivot(index="userID",
-                                      columns="bookIDs",
-                                      values="ratings")
-    print(pivotBooksRatings.head())
+                                      columns="bookID",
+                                      values="rating").fillna(0)
+    # Convert to np array
+    npPivot = pivotBooksRatings.as_matrix()
 
+    # Find mean of ratings
+    userRatingsMean = np.mean(npPivot, axis=1)
+
+    # De-mean all values in np array
+    demeanedPivot = npPivot.reshape(-1,1)
+
+    
 
 def editProfile(userID, books, ratings):
     exit = False
@@ -99,6 +107,8 @@ def editProfile(userID, books, ratings):
 # Section End
 
 # Section: Main program
+
+getRecommendation(books, ratings)
 
 exit = False
 while not exit:
