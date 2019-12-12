@@ -16,6 +16,15 @@ CURRENTPATH = dirname(abspath(__file__))
 
 # Section End
 
+# Section: Parameters
+
+# number of latent features
+# Improve by minimising Root Mean Square Error
+# 20 to 100 should be good
+# K = min(demeanedPivot.shape)-1
+
+# Section End
+
 # Section: Load database
 
 books = pd.read_csv(CURRENTPATH+"//books.csv")
@@ -31,26 +40,80 @@ ratings = pd.read_csv(CURRENTPATH+"//ratings.csv")
 
 # Credit to https://beckernick.github.io/matrix-factorization-recommender/
 # This function is inspired by this web pages content
-def getRecommendation(books, ratings):
+def getPredictionDF(books, ratings):
     # Create a pivot table, with users as rows, books as columns,
     # and ratings as cell values
-    pivotBooksRatings = ratings.pivot(index="userID",
-                                      columns="bookID",
-                                      values="rating").fillna(0)
+    RDataFrame = ratings.pivot(index="userID",
+                               columns="bookID",
+                               values="rating").fillna(0)
+
     # Convert to np array
-    npPivot = pivotBooksRatings.values
+    R = RDataFrame.values
 
     # Find mean of ratings
-    userRatingsMean = np.mean(npPivot, axis=1)
+    userRatingsMean = np.mean(R, axis=1)
 
     # De-mean all values in np array
-    demeanedPivot = npPivot - userRatingsMean.reshape(-1, 1)
+    demeanedPivot = R - userRatingsMean.reshape(-1, 1)
 
     # Run Singular Value Decomposition on the matrix
+    # U: user features matrix - how much users like each feature
+    # Σ: diagonal matrix singular values/weights
+    # V^T: book features matrix - how relevant each feature is to each book
     U, sigma, Vt = svds(demeanedPivot, k=min(demeanedPivot.shape)-1)
 
     # Reconvert the sum back into a diagonal matrix
     sigma = np.diag(sigma)
+
+    # Follow the formula ratings formula R=UΣ(V^T), adding back on the means
+    allPredictedRatings = (np.dot(np.dot(U, sigma), Vt)
+                           + userRatingsMean.reshape(-1, 1))
+
+    # Convert back to workable DataFrame
+    predictionDF = pd.DataFrame(allPredictedRatings,
+                                columns=RDataFrame.columns)
+
+    return predictionDF
+
+
+# Credit to https://beckernick.github.io/matrix-factorization-recommender/
+# This function is inspired by this web pages content
+def getRecommendedBooks(userID, books, ratings, predictionDF, recommendSize=5):
+
+    # Retrieve and sort the predicted ratings for the user
+    sortedUserPredictions = (predictionDF.iloc[userID]
+                             .sort_values(ascending=False))
+
+    # Get all of the user's ratings
+    userRatings = ratings.loc[ratings["userID"] == userID]
+
+    # Join/merge these ratings with the book info
+    joinedUserRatings = (userRatings.merge(books, how="left",
+                                           left_on='bookID',
+                                           right_on='bookID'
+                                           ).sort_values(['rating'],
+                                                         ascending=False))
+
+    # Book info from books the user has not rated
+    nonRatedBookInfos = books[~books['bookID'].isin(joinedUserRatings['bookID'])]
+
+    # Merge this info with all predictions
+    mergedInfo = nonRatedBookInfos.merge((pd.DataFrame(sortedUserPredictions)
+                                          .reset_index()),
+                                         how='left',
+                                         left_on='bookID', right_on='bookID')
+
+    # Rename the predictions column from userId to 'Predictions'
+    renamedInfo = mergedInfo.rename(columns={userID: 'Predictions'})
+
+    # Sort so best predictions are at the top
+    sortedInfo = renamedInfo.sort_values('Predictions', ascending=False)
+
+    # Reduce list down to only show top recommendSize rows and
+    recommendedBooks = sortedInfo.iloc[:recommendSize, :-1]
+
+    return recommendedBooks
+
 
 
 def editProfile(userID, books, ratings):
@@ -119,7 +182,7 @@ def editProfile(userID, books, ratings):
 
 # Section: Main program
 
-getRecommendation(books, ratings)
+predictionDF = getPredictionDF(books, ratings)
 
 exit = False
 while not exit:
@@ -129,6 +192,7 @@ while not exit:
     # If non valid ID
     if not userID.isdigit():
         continue
+    userID = int(userID)
 
     logout = False
     while not logout:
@@ -141,11 +205,27 @@ while not exit:
         menuChoice = input("\nEnter choice: ")
 
         if menuChoice == "1":
-            getRecommendation(books, ratings)
+            recommendSize = input("\nHow many recommended books would "
+                                  "you like? (default: 5): ")
+            if recommendSize.isdigit():
+                recommendSize = int(recommendSize)
+            else:
+                recommendSize = 5
+
+            recommendedBooks = getRecommendedBooks(userID, books, ratings,
+                                                   predictionDF,
+                                                   recommendSize)
+
+            print("Based on your previous ratings, "
+                  "here are your {0} recommended books:".format(recommendSize))
+            print(recommendedBooks.to_string(index=False))
+
         elif menuChoice == "2":
-            editProfile(int(userID), books, ratings)
+            editProfile(userID, books, ratings)
+
         elif menuChoice == "8":
             logout = True
+
         elif menuChoice == "9":
             logout = True
             exit = True
