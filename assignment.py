@@ -10,27 +10,22 @@ from os.path import dirname, abspath
 
 # Section: Constants
 
-PATH = dirname(abspath(__file__)) + "//"
-
-BOOKSPATH = PATH + "books.csv"
+CURRENTPATH = dirname(abspath(__file__))
 
 # Section End
 
 # Section: Load database
 
 books = pd.read_csv(CURRENTPATH+"//books.csv")
-ratings = pd.read_csv(CURRENTPATH+"//ratings.csv")
+ratings = pd.read_csv(CURRENTPATH+"//ratings.csv", index_col=0)
 
 # Section End
 
 print(books)
 print(ratings)
-print(users)
 
 # Section: Save database
 
-books.to_json(path_or_buf=BOOKSPATH, orient='records')
-ratings.to_json(path_or_buf=RATINGSPATH, orient='records')
-users.to_json(path_or_buf=USERSPATH, orient='records')
+ratings.to_csv(CURRENTPATH+"//ratings.csv")
 
 # Section End

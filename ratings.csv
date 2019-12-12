@@ -1,31 +1,39 @@
-﻿bookTitles,bookGenres
-The Hunger Games,"Young Adult,Fiction,Dystopia,Fantasy,Science Fiction"
-Harry Potter and the Order of the Phoenix,"Fantasy,Young Adult,Fiction"
-To Kill a Mockingbird,"Classics,Fiction,Historical Fiction,Academic,School"
-Pride and Prejudice,"Classics,Fiction,Romance"
-Twilight,"Young Adult,Fantasy,Romance,Paranormal,Vampires,Fiction,Paranormal"
-The Book Thief,"Historical Fiction,Fiction,Young Adult"
-Animal Farm,"Classics,Fiction,Dystopia,Fantasy,Literature,Science Fiction"
-The Chronicles of Narnia,"Fantasy,Classics,Fiction,Young Adult,Childrens,Christian,Adventure,Science Fiction Fantasy,Christian, Fiction,Childrens,Middle Grade,Science Fiction"
-The Lord of the Rings,"Fantasy,Fiction,Classics"
-Gone with the Wind,"Classics,Historical Fiction,Fiction,Romance,Historical"
-The Fault in Our Stars,"Young Adult,Fiction,Romance,Contemporary"
-The Giving Tree,"Childrens,Picture Books,Classics,Fiction"
-Wuthering Heights,"Classics,Fiction,Romance,Gothic,Literature,Historical Fiction,19th Century,Classic Literature,Novels,Historical"
-The Da Vinci Code,"Fiction,Mystery,Thriller,Suspense"
-Memoirs of a Geisha,"Fiction,Historical Fiction,Romance,Historical,Classics"
-The Picture of Dorian Gray,"Classics,Fiction,Horror,Fantasy"
-Alice's Adventures in Wonderland,"Classics,Fantasy,Fiction,Childrens"
-Les Misérables,"Classics,Fiction,Historical Fiction,Literature,Cultural,France,Historical,Novels,European Literature,French Literature,Romance,Classic Literature"
-Jane Eyre,"Classics,Fiction,Romance,Historical Fiction,Literature,Gothic,Historical,19th Century,Classic Literature,Academic,School"
-Divergent,"Young Adult,Science Fiction,Dystopia,Fiction,Fantasy"
-Romeo and Juliet,"Classics,Plays,Fiction,Romance"
-Lord of the Flies,"Classics,Fiction,Young Adult,Academic,School"
-The Alchemist,"Fiction,Classics,Fantasy,Philosophy"
-Crime and Punishment,"Classics,Fiction,Cultural,Russia,Literature,Russian Literature"
-The Perks of Being a Wallflower,"Young Adult,Fiction,Contemporary"
-Ender's Game,"Science Fiction,Fiction,Young Adult,Fantasy"
-City of Bones,"Fantasy,Young Adult,Fantasy,Paranormal,Romance"
-The Great Gatsby,"Classics,Fiction,Academic,School,Literature"
-The Help,"Fiction,Historical Fiction,Historical,Adult"
-Anne of Green Gables,"Classics,Fiction,Young Adult,Childrens,Historical,Historical Fiction"
+,userID,bookID,rating
+0,0,5,5
+1,0,6,1
+2,0,0,4
+3,0,17,0
+4,0,7,5
+5,1,29,0
+6,3,19,1
+7,3,17,0
+8,3,21,2
+9,3,4,3
+10,3,28,1
+11,3,26,2
+12,3,25,1
+13,3,7,4
+14,4,6,1
+15,4,22,1
+16,4,9,2
+17,4,2,1
+18,4,26,4
+19,6,6,0
+20,6,23,3
+21,6,9,2
+22,6,5,4
+23,7,2,1
+24,7,14,3
+25,7,4,5
+26,7,8,0
+27,7,29,3
+28,7,28,2
+29,8,4,1
+30,8,11,4
+31,8,0,1
+32,8,10,2
+33,8,1,3
+34,9,27,2
+35,9,24,2
+36,9,25,4
+37,9,10,5
