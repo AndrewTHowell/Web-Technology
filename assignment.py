@@ -6,6 +6,8 @@ from os.path import dirname, abspath
 
 import numpy as np
 
+from scipy.sparse.linalg import svds
+
 # Section End
 
 # Section: Constants
@@ -27,20 +29,29 @@ ratings = pd.read_csv(CURRENTPATH+"//ratings.csv")
 # Section: Functions
 
 
+# Credit to https://beckernick.github.io/matrix-factorization-recommender/
+# This function is inspired by this web pages content
 def getRecommendation(books, ratings):
+    # Create a pivot table, with users as rows, books as columns,
+    # and ratings as cell values
     pivotBooksRatings = ratings.pivot(index="userID",
                                       columns="bookID",
                                       values="rating").fillna(0)
     # Convert to np array
-    npPivot = pivotBooksRatings.as_matrix()
+    npPivot = pivotBooksRatings.values
 
     # Find mean of ratings
     userRatingsMean = np.mean(npPivot, axis=1)
 
     # De-mean all values in np array
-    demeanedPivot = npPivot.reshape(-1,1)
+    demeanedPivot = npPivot - userRatingsMean.reshape(-1, 1)
 
-    
+    # Run Singular Value Decomposition on the matrix
+    U, sigma, Vt = svds(demeanedPivot, k=min(demeanedPivot.shape)-1)
+
+    # Reconvert the sum back into a diagonal matrix
+    sigma = np.diag(sigma)
+
 
 def editProfile(userID, books, ratings):
     exit = False
