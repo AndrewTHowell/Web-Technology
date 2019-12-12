@@ -58,9 +58,8 @@ def editProfile(userID, books, ratings):
 
         if menuChoice == "1" or menuChoice == "2":
             bookID = int(input("Enter book ID: "))
-            bookIDs = userRatings["bookID"].unique()
-            print("bookIDs: {0}".format(bookIDs))
-            if bookID in bookIDs:
+            bookIDsRated = userRatings["bookID"].unique()
+            if bookID in bookIDsRated:
                 currentRatingRow = ratings.loc[(ratings["userID"] == userID)
                                                & (ratings["bookID"] == bookID)]
                 currentRating = currentRatingRow.iloc[0]["rating"]
@@ -80,6 +79,19 @@ def editProfile(userID, books, ratings):
 
         elif menuChoice == "3":
             bookID = int(input("Enter book ID: "))
+            bookIDsRated = userRatings["bookID"].unique()
+            if bookID in bookIDsRated:
+                currentRatingRow = ratings.loc[(ratings["userID"] == userID)
+                                               & (ratings["bookID"] == bookID)]
+                currentRating = currentRatingRow.iloc[0]["rating"]
+                print("You rated it {0}/5".format(currentRating))
+                confirm = input("Confirm delete by typing 'DEL': ").upper()
+                if confirm == "DEL":
+                    deleteIndex = ratings[(ratings["userID"] == userID)
+                                          & (ratings["bookID"] == bookID)].index
+                    ratings.drop(deleteIndex, inplace=True)
+            else:
+                print("You have not rated this book")
         elif menuChoice == "9":
             exit = True
 
