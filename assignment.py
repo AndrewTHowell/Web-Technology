@@ -12,31 +12,14 @@ from os.path import dirname, abspath
 
 PATH = dirname(abspath(__file__)) + "//"
 
-BOOKSPATH = PATH + "books.json"
-RATINGSPATH = PATH + "ratings.json"
-USERSPATH = PATH + "users.json"
+BOOKSPATH = PATH + "books.csv"
 
 # Section End
 
 # Section: Load database
 
-books = pd.read_json(path_or_buf=BOOKSPATH, orient='records')
-
-ratings = pd.read_json(path_or_buf=RATINGSPATH, orient='records')
-if len(ratings.columns.values) == 0:
-    userIDs = []
-    bookIDs = []
-    bookRatings = []
-    ratings = pd.DataFrame(data={"userID": userIDs, "bookID": bookIDs,
-                                 "bookRating": bookRatings})
-
-users = pd.read_json(path_or_buf=USERSPATH, orient='records')
-if len(users.columns.values) == 0:
-    userIDs = []
-    bookIDs = []
-    bookRatings = []
-    users = pd.DataFrame(data={"userID": userIDs, "bookID": bookIDs,
-                               "bookRating": bookRatings})
+books = pd.read_csv(CURRENTPATH+"//books.csv")
+ratings = pd.read_csv(CURRENTPATH+"//ratings.csv")
 
 # Section End
 
