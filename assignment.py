@@ -8,6 +8,8 @@ import numpy as np
 
 from scipy.sparse.linalg import svds
 
+from flask import Flask
+
 # Section End
 
 # Section: Constants
@@ -88,7 +90,7 @@ def getRecommendedBooks(userID, books, ratings, predictionDF, recommendSize=5):
 
     # Book info from books the user has not rated
     nonRatedBookInfos = books[(~books['bookID']
-                               .isin(joinedUserRatings['bookID']))]
+                               .isin(ratedBooksInfo['bookID']))]
 
     # Merge this info with all predictions
     mergedInfo = nonRatedBookInfos.merge((pd.DataFrame(sortedUserPredictions)
@@ -108,7 +110,7 @@ def getRecommendedBooks(userID, books, ratings, predictionDF, recommendSize=5):
     return recommendedBooks
 
 
-def getRateBookInfo(userID, books, ratings):
+def getRatedBookInfo(userID, books, ratings):
 
     # Get all of the user's ratings
     userRatings = ratings.loc[ratings["userID"] == userID]
@@ -128,17 +130,19 @@ def editProfile(userID, books, ratings):
     while not exit:
         print("\n*** User {0} Menu ***".format(userID))
         print("\n** Ratings **")
-        ratedBooksInfo = getRateBookInfo(userID, books, ratings)
-        print(ratedBooksInfo.rename(columns={bookID: 'Book ID',
-                                             bookTitle: 'Book Title',
-                                             bookGenre: 'Book Genres',
-                                             rating: 'Rating'}
-                                    ).to_string(index=False,
-                                                columns={"Book ID",
-                                                         "Book Title",
-                                                         "Book Genres",
-                                                         "Rating"}
-                                                ))
+        ratedBooksInfo = getRatedBookInfo(userID, books, ratings)
+
+        renamedDF = ratedBooksInfo.rename(columns={"bookID": 'Book ID',
+                                                  "bookTitle": 'Book Title',
+                                                  "bookGenre": 'Book Genres',
+                                                  "rating": 'Rating'})
+
+        stringDF = renamedDF.to_string(index=False, max_rows = 10,
+                                       columns={"Book ID",
+                                                "Book Title",
+                                                "Book Genres",
+                                                "Rating"})
+        print(stringDF)
 
         print("\n** Options **")
         print("1. Add book rating")
@@ -228,9 +232,9 @@ while not exit:
 
             print("\nBased on your previous ratings, "
                   "here are your {0} recommended books:".format(recommendSize))
-            print(recommendedBooks.rename(columns={bookID: 'Book ID',
-                                                   bookTitle: 'Book Title',
-                                                   bookGenre: 'Book Genres'}
+            print(recommendedBooks.rename(columns={"bookID": 'Book ID',
+                                                   "bookTitle": 'Book Title',
+                                                   "bookGenre": 'Book Genres'}
                                           ).to_string(index=False))
 
         elif menuChoice == "2":
