@@ -12,14 +12,14 @@ userIDs = []
 bookIDs = []
 ratings = []
 
-# Generate 10 random users
-for user in range(10):
+# Generate 20 random users
+for user in range(20):
     numberOfBooks = books.shape[0]
-    print("numberOfBooks: {0}".format(numberOfBooks))
-    potentialBooksLength = random.randrange(0, numberOfBooks//2)
-    print("potentialBooksLength: {0}".format(potentialBooksLength))
+
+    potentialBooksLength = random.randrange(0, numberOfBooks)
+
     potentialBooks = random.sample(range(numberOfBooks), potentialBooksLength)
-    print("potentialBooks: {0}".format(potentialBooks))
+
     for bookID in potentialBooks:
         # Random as to whether this book is reviewed
         if bool(random.getrandbits(1)):

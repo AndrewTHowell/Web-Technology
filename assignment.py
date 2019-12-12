@@ -84,18 +84,11 @@ def getRecommendedBooks(userID, books, ratings, predictionDF, recommendSize=5):
     sortedUserPredictions = (predictionDF.iloc[userID]
                              .sort_values(ascending=False))
 
-    # Get all of the user's ratings
-    userRatings = ratings.loc[ratings["userID"] == userID]
-
-    # Join/merge these ratings with the book info
-    joinedUserRatings = (userRatings.merge(books, how="left",
-                                           left_on='bookID',
-                                           right_on='bookID'
-                                           ).sort_values(['rating'],
-                                                         ascending=False))
+    ratedBooksInfo = getRateBookInfo(userID, books, ratings)
 
     # Book info from books the user has not rated
-    nonRatedBookInfos = books[~books['bookID'].isin(joinedUserRatings['bookID'])]
+    nonRatedBookInfos = books[(~books['bookID']
+                               .isin(joinedUserRatings['bookID']))]
 
     # Merge this info with all predictions
     mergedInfo = nonRatedBookInfos.merge((pd.DataFrame(sortedUserPredictions)
@@ -115,20 +108,37 @@ def getRecommendedBooks(userID, books, ratings, predictionDF, recommendSize=5):
     return recommendedBooks
 
 
+def getRateBookInfo(userID, books, ratings):
+
+    # Get all of the user's ratings
+    userRatings = ratings.loc[ratings["userID"] == userID]
+
+    # Join/merge these ratings with the book info
+    joinedUserRatings = (userRatings.merge(books, how="left",
+                                           left_on='bookID',
+                                           right_on='bookID'
+                                           ).sort_values(['rating'],
+                                                         ascending=False))
+
+    return joinedUserRatings
+
 
 def editProfile(userID, books, ratings):
     exit = False
     while not exit:
         print("\n*** User {0} Menu ***".format(userID))
         print("\n** Ratings **")
-        userRatings = ratings.loc[ratings["userID"] == userID]
-        for index, rating in userRatings.iterrows():
-            bookRow = books.loc[rating["bookID"]]
-            bookID = bookRow["bookID"]
-            bookTitle = bookRow["bookTitle"]
-            rating = rating["rating"]
-            print("Book ID: {0}, Book Title: {1}, Your rating: {2}"
-                  .format(bookID, bookTitle, rating))
+        ratedBooksInfo = getRateBookInfo(userID, books, ratings)
+        print(ratedBooksInfo.rename(columns={bookID: 'Book ID',
+                                             bookTitle: 'Book Title',
+                                             bookGenre: 'Book Genres',
+                                             rating: 'Rating'}
+                                    ).to_string(index=False,
+                                                columns={"Book ID",
+                                                         "Book Title",
+                                                         "Book Genres",
+                                                         "Rating"}
+                                                ))
 
         print("\n** Options **")
         print("1. Add book rating")
@@ -216,9 +226,12 @@ while not exit:
                                                    predictionDF,
                                                    recommendSize)
 
-            print("Based on your previous ratings, "
+            print("\nBased on your previous ratings, "
                   "here are your {0} recommended books:".format(recommendSize))
-            print(recommendedBooks.to_string(index=False))
+            print(recommendedBooks.rename(columns={bookID: 'Book ID',
+                                                   bookTitle: 'Book Title',
+                                                   bookGenre: 'Book Genres'}
+                                          ).to_string(index=False))
 
         elif menuChoice == "2":
             editProfile(userID, books, ratings)
