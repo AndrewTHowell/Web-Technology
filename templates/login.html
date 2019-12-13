@@ -1,17 +1,14 @@
-{% extends "bootstrap/base.html" %}
-<!doctype html>
-<html>
-    <body>
-        <h1>Hello there</h1>
+{% extends "base.html" %}
+{% block content %}
+    <h1>Hello there</h1>
 
-        <form action="/login", method="POST">
-            User ID:<br>
-            <input type="text" name="userID" value="">
-            <br>
-            Password:<br>
-            <input type="password" name="password" value="">
-            <br><br>
-            <input type="submit" value="Submit">
-        </form>
-   </body>
-</html>
+    <form action="/login" method="POST">
+        User ID:<br>
+        <input type="text" name="userID" value="">
+        <br>
+        Password:<br>
+        <input type="password" name="password" value="">
+        <br><br>
+        <input type="submit" value="Submit">
+    </form>
+{% endblock %}
