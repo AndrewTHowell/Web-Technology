@@ -261,6 +261,109 @@ def profile():
 
     return render_template('profile.html', tables=[dfHTML])
 
+@app.route('/user/profile/add', methods=["POST", "GET"])
+def add():
+    if request.method =="GET":
+        return render_template('add.html', tables=[getBooksHTML()])
+    else:
+        ratings = pd.read_csv(CURRENTPATH+"//ratings.csv")
+        form = request.form
+        userID = session["userID"]
+        bookID = form["bookID"]
+        rating = form["rating"]
+        ratings = ratings.append(pd.DataFrame([[userID,
+                                                bookID,
+                                                rating]],
+                                              columns=["userID",
+                                                       "bookID",
+                                                       "rating"]),
+                                 ignore_index=True)
+        ratings.to_csv(CURRENTPATH+"//ratings.csv", index=False)
+        flash("Book rating added")
+        return redirect(url_for('add'))
+
+@app.route('/user/profile/edit', methods=["POST", "GET"])
+def edit():
+    if request.method =="GET":
+        books = pd.read_csv(CURRENTPATH+"//books.csv")
+        ratings = pd.read_csv(CURRENTPATH+"//ratings.csv")
+        userID = session["userID"]
+
+        ratedBooksInfo = getRatedBookInfo(userID, books, ratings)
+
+        renamedDF = ratedBooksInfo.rename(columns={"bookID": 'Book ID',
+                                                  "bookTitle": 'Book Title',
+                                                  "bookGenre": 'Book Genres',
+                                                  "rating": 'Rating'})
+
+        dfHTML = renamedDF.to_html(index=False,
+                                       columns={"Book ID",
+                                                "Book Title",
+                                                "Book Genres",
+                                                "Rating"})
+
+        return render_template('edit.html', tables=[dfHTML])
+    else:
+        books = pd.read_csv(CURRENTPATH+"//books.csv")
+        ratings = pd.read_csv(CURRENTPATH+"//ratings.csv")
+        form = request.form
+        userID = session["userID"]
+        bookID = int(form["bookID"])
+        rating = form["rating"]
+        ratedBooksInfo = getRatedBookInfo(userID, books, ratings)
+        bookIDsRated = ratedBooksInfo["bookID"].unique()
+        if bookID in bookIDsRated:
+            print(ratings.loc[(ratings["userID"] == userID)
+                        & (ratings["bookID"] == bookID)])
+            ratings.loc[(ratings["userID"] == userID)
+                        & (ratings["bookID"] == bookID), "rating"] = rating
+
+            ratings.to_csv(CURRENTPATH+"//ratings.csv", index=False)
+        else:
+            flash("You have not rated this book")
+
+        return redirect(url_for('edit'))
+
+@app.route('/user/profile/delete', methods=["POST", "GET"])
+def delete():
+    if request.method =="GET":
+        books = pd.read_csv(CURRENTPATH+"//books.csv")
+        ratings = pd.read_csv(CURRENTPATH+"//ratings.csv")
+        userID = session["userID"]
+
+        ratedBooksInfo = getRatedBookInfo(userID, books, ratings)
+
+        renamedDF = ratedBooksInfo.rename(columns={"bookID": 'Book ID',
+                                                  "bookTitle": 'Book Title',
+                                                  "bookGenre": 'Book Genres',
+                                                  "rating": 'Rating'})
+
+        dfHTML = renamedDF.to_html(index=False,
+                                       columns={"Book ID",
+                                                "Book Title",
+                                                "Book Genres",
+                                                "Rating"})
+
+        return render_template('delete.html', tables=[dfHTML])
+    else:
+        books = pd.read_csv(CURRENTPATH+"//books.csv")
+        ratings = pd.read_csv(CURRENTPATH+"//ratings.csv")
+        form = request.form
+        userID = session["userID"]
+        bookID = int(form["bookID"])
+        ratedBooksInfo = getRatedBookInfo(userID, books, ratings)
+        bookIDsRated = ratedBooksInfo["bookID"].unique()
+        if bookID in bookIDsRated:
+            deleteIndex = ratings[(ratings["userID"] == userID)
+                                  & (ratings["bookID"] == bookID)].index
+            ratings.drop(deleteIndex, inplace=True)
+
+            ratings.to_csv(CURRENTPATH+"//ratings.csv", index=False)
+        else:
+            flash("You have not rated this book")
+
+        return redirect(url_for('delete'))
+
 @app.route('/logout/', methods=["POST"])
 def logout():
     session["logged_in"] = False
