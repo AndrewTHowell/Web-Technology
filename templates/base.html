@@ -23,18 +23,30 @@
                 </ul>
             </div>
             <div class="d-flex justify-content-end col-lg-3">
-                <form action="/login" method="POST">
-                    <input type="text" name="userID" value="" placeholder="User ID">
-                    <input type="password" name="password" value="" placeholder="Password">
-                    <input class="btn btn-success" type="submit">
-                </form>
+                {% if "logged_in" not in session or session["logged_in"] == False %}
+                    <form action="/login" method="POST">
+                        <div class="form-group">
+                            <input type="text" name="userID" value="" placeholder="User ID" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" name="password" value="" placeholder="Password" required>
+                        </div>
+                        <div class="form-group">
+                            <input class="btn btn-success" type="submit">
+                        </div>
+                    </form>
+                {% else %}
+                    <form action="/logout" method="POST">
+                        <button type="submit" class="btn btn-danger">Logout</button>
+                    </form>
+                {% endif %}
             </div>
         </nav>
         {% with messages = get_flashed_messages() %}
             {% if messages %}
                 {% for message in messages %}
-                    <div class="alert alert-warning alert-dismissible" role="alert">
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times</span></button>
                         {{message}}
                     </div>
                 {% endfor %}
