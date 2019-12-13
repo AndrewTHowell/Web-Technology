@@ -86,7 +86,7 @@ def getRecommendedBooks(userID, books, ratings, predictionDF, recommendSize=5):
     sortedUserPredictions = (predictionDF.iloc[userID]
                              .sort_values(ascending=False))
 
-    ratedBooksInfo = getRateBookInfo(userID, books, ratings)
+    ratedBooksInfo = getRatedBookInfo(userID, books, ratings)
 
     # Book info from books the user has not rated
     nonRatedBookInfos = books[(~books['bookID']
@@ -154,7 +154,7 @@ def editProfile(userID, books, ratings):
 
         if menuChoice == "1" or menuChoice == "2":
             bookID = int(input("Enter book ID: "))
-            bookIDsRated = userRatings["bookID"].unique()
+            bookIDsRated = ratedBooksInfo["bookID"].unique()
             if bookID in bookIDsRated:
                 currentRatingRow = ratings.loc[(ratings["userID"] == userID)
                                                & (ratings["bookID"] == bookID)]
