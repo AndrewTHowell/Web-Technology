@@ -3,24 +3,34 @@
 from flask import Flask, redirect, url_for, request, render_template
 app = Flask(__name__)
 
-@app.route('/hello/<user>')
-def hello_name(user):
-   return render_template('hello.html', name = user)
+@app.route('/user/')
+def userPage(userID):
+    return render_template('user.html', userID = userID)
 
-@app.route('/success/<name>')
-def success(name):
-   return 'welcome %s' % name
+@app.route('/loginResponse/')
+def response(success):
+    if success:
 
-@app.route('/login',methods = ['POST', 'GET'])
+    return render_template('response.html',
+                            title = title,
+                            message)
+
+@app.route('/login', methods = ['POST', 'GET'])
 def login():
-   if request.method == 'POST':
-      user = request.form['nm']
-      return redirect(url_for('success',name = user))
-   else:
-      user = request.args.get('nm')
-      return redirect(url_for('success',name = user))
+    if request.method == 'POST':
+        form = request.form
+        userID = form["userID"]
+        password = form["password"]
+        if passwordCorrect(userID, password):
+            flash("Password accepted")
+            return redirect(url_for('user', userID = userID))
+        else:
+            flash("Password rejected")
+
+    else:
+        return render_template('login.html')
 
 if __name__ == "__main__":
-    app.run(port=5000)
+    app.run()
 
 # Section End
