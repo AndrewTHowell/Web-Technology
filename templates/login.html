@@ -8,7 +8,16 @@
         <br>
         Password:<br>
         <input type="password" name="password" value="">
-        <br><br>
+        <br>
         <input type="submit" value="Submit">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                {% for message in messages %}
+                    <p style="color:red">
+                        {{message}}
+                    </p>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
     </form>
 {% endblock %}
