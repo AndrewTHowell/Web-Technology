@@ -115,6 +115,8 @@ def getRatedBookInfo(userID, books, ratings):
     # Get all of the user's ratings
     userRatings = ratings.loc[ratings["userID"] == userID]
 
+    print(userRatings)
+
     # Join/merge these ratings with the book info
     joinedUserRatings = (userRatings.merge(books, how="left",
                                            left_on='bookID',
@@ -136,7 +138,7 @@ def editProfile(userID, books, ratings):
                                                   "bookTitle": 'Book Title',
                                                   "bookGenre": 'Book Genres',
                                                   "rating": 'Rating'})
-
+        print(renamedDF)
         stringDF = renamedDF.to_string(index=False, max_rows = 10,
                                        columns={"Book ID",
                                                 "Book Title",

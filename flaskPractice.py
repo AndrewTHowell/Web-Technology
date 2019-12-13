@@ -22,7 +22,7 @@ def books():
     df = pd.DataFrame({'A': [0, 1, 2, 3, 4],
                    'B': [5, 6, 7, 8, 9],
                    'C': ['a', 'b', 'c--', 'd', 'e']})
-    return render_template('books.html', tables=[df.to_html(classes='data', header="true")])
+    return render_template('books.html', tables=[df.to_html(classes='table table-striped table-hover thead-light', header="true")])
 
 @app.route('/user/')
 def userPage():
