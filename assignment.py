@@ -138,8 +138,8 @@ def editProfile(userID, books, ratings):
                                                   "bookTitle": 'Book Title',
                                                   "bookGenre": 'Book Genres',
                                                   "rating": 'Rating'})
-        print(renamedDF)
-        stringDF = renamedDF.to_string(index=False, max_rows = 10,
+
+        stringDF = renamedDF.to_string(index=False,
                                        columns={"Book ID",
                                                 "Book Title",
                                                 "Book Genres",
