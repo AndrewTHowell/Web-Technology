@@ -8,7 +8,9 @@ import numpy as np
 
 from scipy.sparse.linalg import svds
 
-from flask import Flask, redirect, url_for, request, render_template, flash, session
+from flask import Flask, redirect, url_for, request
+from flask import render_template, flash,  session
+
 import os
 
 # Section End
@@ -115,11 +117,11 @@ def editProfile(userID, books, ratings):
         ratedBooksInfo = getRatedBookInfo(userID, books, ratings)
 
         renamedDF = ratedBooksInfo.rename(columns={"bookID": 'Book ID',
-                                                  "bookTitle": 'Book Title',
-                                                  "bookGenre": 'Book Genres',
-                                                  "rating": 'Rating'})
+                                                   "bookTitle": 'Book Title',
+                                                   "bookGenre": 'Book Genres',
+                                                   "rating": 'Rating'})
         print(renamedDF)
-        stringDF = renamedDF.to_string(index=False, max_rows = 10,
+        stringDF = renamedDF.to_string(index=False, max_rows=10,
                                        columns={"Book ID",
                                                 "Book Title",
                                                 "Book Genres",
@@ -192,8 +194,8 @@ def getBooksHTML():
 
 def dfToHTML(df):
     dfHTML = df.to_html(classes='table table-striped '
-                                   'table-hover table-responsive',
-                           header=True, index=False)
+                                'table-hover table-responsive',
+                        header=True, index=False)
     return dfHTML
 
 
@@ -204,13 +206,16 @@ def dfToHTML(df):
 app = Flask(__name__)
 app.secret_key = os.urandom(16)
 
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
+
 @app.route('/books/')
 def books():
     return render_template('books.html', tables=[getBooksHTML()])
+
 
 @app.route('/user/')
 def user():
@@ -222,6 +227,7 @@ def user():
         session["logged_in"] = False
         flash("Please log in first")
         return redirect(url_for('index'))
+
 
 @app.route('/user/recommend/')
 def recommend():
@@ -242,6 +248,7 @@ def recommend():
 
     return render_template('recommend.html', tables=[dfHTML])
 
+
 @app.route('/user/profile')
 def profile():
     books = pd.read_csv(CURRENTPATH+"//books.csv")
@@ -251,21 +258,21 @@ def profile():
     ratedBooksInfo = getRatedBookInfo(userID, books, ratings)
 
     renamedDF = ratedBooksInfo.rename(columns={"bookID": 'Book ID',
-                                              "bookTitle": 'Book Title',
-                                              "bookGenre": 'Book Genres',
-                                              "rating": 'Rating'})
+                                               "bookTitle": 'Book Title',
+                                               "bookGenre": 'Book Genres',
+                                               "rating": 'Rating'})
 
-    dfHTML = renamedDF.to_html(index=False,
-                                   columns={"Book ID",
-                                            "Book Title",
-                                            "Book Genres",
-                                            "Rating"})
+    dfHTML = renamedDF.to_html(index=False, columns={"Book ID",
+                                                     "Book Title",
+                                                     "Book Genres",
+                                                     "Rating"})
 
     return render_template('profile.html', tables=[dfHTML])
 
+
 @app.route('/user/profile/add', methods=["POST", "GET"])
 def add():
-    if request.method =="GET":
+    if request.method == "GET":
         return render_template('add.html', tables=[getBooksHTML()])
     else:
         ratings = pd.read_csv(CURRENTPATH+"//ratings.csv")
@@ -273,9 +280,7 @@ def add():
         userID = session["userID"]
         bookID = form["bookID"]
         rating = form["rating"]
-        ratings = ratings.append(pd.DataFrame([[userID,
-                                                bookID,
-                                                rating]],
+        ratings = ratings.append(pd.DataFrame([[userID, bookID, rating]],
                                               columns=["userID",
                                                        "bookID",
                                                        "rating"]),
@@ -284,9 +289,10 @@ def add():
         flash("Book rating added")
         return redirect(url_for('add'))
 
+
 @app.route('/user/profile/edit', methods=["POST", "GET"])
 def edit():
-    if request.method =="GET":
+    if request.method == "GET":
         books = pd.read_csv(CURRENTPATH+"//books.csv")
         ratings = pd.read_csv(CURRENTPATH+"//ratings.csv")
         userID = session["userID"]
@@ -294,15 +300,14 @@ def edit():
         ratedBooksInfo = getRatedBookInfo(userID, books, ratings)
 
         renamedDF = ratedBooksInfo.rename(columns={"bookID": 'Book ID',
-                                                  "bookTitle": 'Book Title',
-                                                  "bookGenre": 'Book Genres',
-                                                  "rating": 'Rating'})
+                                                   "bookTitle": 'Book Title',
+                                                   "bookGenre": 'Book Genres',
+                                                   "rating": 'Rating'})
 
-        dfHTML = renamedDF.to_html(index=False,
-                                       columns={"Book ID",
-                                                "Book Title",
-                                                "Book Genres",
-                                                "Rating"})
+        dfHTML = renamedDF.to_html(index=False, columns={"Book ID",
+                                                         "Book Title",
+                                                         "Book Genres",
+                                                         "Rating"})
 
         return render_template('edit.html', tables=[dfHTML])
     else:
@@ -316,7 +321,7 @@ def edit():
         bookIDsRated = ratedBooksInfo["bookID"].unique()
         if bookID in bookIDsRated:
             print(ratings.loc[(ratings["userID"] == userID)
-                        & (ratings["bookID"] == bookID)])
+                              & (ratings["bookID"] == bookID)])
             ratings.loc[(ratings["userID"] == userID)
                         & (ratings["bookID"] == bookID), "rating"] = rating
 
@@ -326,9 +331,10 @@ def edit():
 
         return redirect(url_for('edit'))
 
+
 @app.route('/user/profile/delete', methods=["POST", "GET"])
 def delete():
-    if request.method =="GET":
+    if request.method == "GET":
         books = pd.read_csv(CURRENTPATH+"//books.csv")
         ratings = pd.read_csv(CURRENTPATH+"//ratings.csv")
         userID = session["userID"]
@@ -336,15 +342,14 @@ def delete():
         ratedBooksInfo = getRatedBookInfo(userID, books, ratings)
 
         renamedDF = ratedBooksInfo.rename(columns={"bookID": 'Book ID',
-                                                  "bookTitle": 'Book Title',
-                                                  "bookGenre": 'Book Genres',
-                                                  "rating": 'Rating'})
+                                                   "bookTitle": 'Book Title',
+                                                   "bookGenre": 'Book Genres',
+                                                   "rating": 'Rating'})
 
-        dfHTML = renamedDF.to_html(index=False,
-                                       columns={"Book ID",
-                                                "Book Title",
-                                                "Book Genres",
-                                                "Rating"})
+        dfHTML = renamedDF.to_html(index=False, columns={"Book ID",
+                                                         "Book Title",
+                                                         "Book Genres",
+                                                         "Rating"})
 
         return render_template('delete.html', tables=[dfHTML])
     else:
@@ -366,6 +371,7 @@ def delete():
 
         return redirect(url_for('delete'))
 
+
 @app.route('/logout/', methods=["POST"])
 def logout():
     session["logged_in"] = False
@@ -373,6 +379,7 @@ def logout():
 
     flash("Logged out")
     return redirect(url_for('index'))
+
 
 @app.route('/login/', methods=["POST"])
 def login():
@@ -391,6 +398,7 @@ def login():
     else:
         flash("Invalid userID")
         return redirect(url_for('index'))
+
 
 if __name__ == "__main__":
     app.run(port=80)
